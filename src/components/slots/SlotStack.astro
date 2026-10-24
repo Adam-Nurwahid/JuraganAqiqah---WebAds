@@ -1,0 +1,160 @@
+---
+import { siteData } from '../../data/site.js';
+import { imageSlots } from '../../data/imageSlots.js';
+import ImageSlot from './ImageSlot.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import CtaBlock from '../CtaBlock.astro';
+
+// Merender seluruh `imageSlots` sesuai urutan array.
+// Slot berurutan dengan `group` yang sama digabung menjadi carousel / grid / stack.
+const blocks = [];
+for (const slot of imageSlots) {
+  const last = blocks[blocks.length - 1];
+  if (slot.group && last && last.group === slot.group) {
+    last.slots.push(slot);
+  } else {
+    blocks.push({
+      group: slot.group,
+      display: slot.group ? (slot.display ?? 'stack') : 'single',
+      // Carousel bergeser otomatis jika `autoScroll` diisi (true = 3500 ms, atau angka ms)
+      autoScroll: slot.autoScroll === true ? 3500 : slot.autoScroll || 0,
+      slots: [slot]
+    });
+  }
+}
+
+// CTA setelah blok mengikuti `ctaAfter` milik slot terakhir di blok tersebut.
+const ctaFor = (slot) => {
+  if (!slot.ctaAfter) return null;
+  return slot.ctaAfter === true
+    ? { label: siteData.ctaLabel, message: siteData.waMessages.promo }
+    : { label: slot.ctaAfter.label ?? siteData.ctaLabel, message: slot.ctaAfter.message ?? siteData.waMessages.promo };
+};
+---
+
+<div class="mt-8 space-y-1">
+  {
+    blocks.map((block) => {
+      const first = block.slots[0];
+      const lastSlot = block.slots[block.slots.length - 1];
+      const cta = ctaFor(lastSlot);
+
+      return (
+        <section id={block.group ?? first.id}>
+          {first.intro && (
+            <SectionHeading
+              class="px-5 pb-6 pt-10"
+              eyebrow={first.intro.eyebrow}
+              title={first.intro.title}
+              description={first.intro.text}
+            />
+          )}
+
+          {block.display === 'carousel' ? (
+            <>
+              <div
+                class="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-5 px-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                tabindex="0"
+                aria-label="Geser untuk melihat lainnya"
+                data-autoscroll={block.autoScroll || undefined}
+              >
+                {block.slots.map((slot) => (
+                  <div class="reveal w-[85%] flex-none snap-start overflow-hidden rounded-xl shadow-soft">
+                    <ImageSlot slot={slot} />
+                  </div>
+                ))}
+              </div>
+              <p class="mt-3 px-5 text-center text-sm text-brown">Geser untuk melihat lainnya →</p>
+            </>
+          ) : block.display === 'grid' ? (
+            <div class="grid grid-cols-2 gap-1">
+              {block.slots.map((slot) => (
+                <div class="reveal">
+                  <ImageSlot slot={slot} compact />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div class="space-y-1">
+              {block.slots.map((slot) => (
+                <div class="reveal">
+                  <ImageSlot slot={slot} />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {cta && <CtaBlock location={`setelah-${lastSlot.id}`} label={cta.label} message={cta.message} class="px-5 py-7" />}
+        </section>
+      );
+    })
+  }
+</div>
+
+<script is:inline>
+  // Auto scroll carousel ([data-autoscroll]): geser ke slide berikutnya setiap N ms,
+  // kembali ke awal setelah slide terakhir. Berhenti sementara saat disentuh/di-hover,
+  // hanya berjalan saat terlihat di layar, dan nonaktif jika pengguna memilih reduced motion.
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    document.querySelectorAll('[data-autoscroll]').forEach(function (track) {
+      var interval = parseInt(track.getAttribute('data-autoscroll'), 10) || 3500;
+      var timer = null;
+      var paused = false;
+      var visible = false;
+
+      function next() {
+        var items = track.children;
+        if (!items.length) return;
+        var atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+        if (atEnd) {
+          track.scrollTo({ left: 0, behavior: 'smooth' });
+          return;
+        }
+        // Geser selebar satu slide + jarak antarslide; scroll-snap merapikan posisinya.
+        var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+        track.scrollBy({ left: items[0].getBoundingClientRect().width + gap, behavior: 'smooth' });
+      }
+
+      function start() {
+        if (timer || paused || !visible) return;
+        timer = setInterval(next, interval);
+      }
+
+      function stop() {
+        clearInterval(timer);
+        timer = null;
+      }
+
+      function pause() {
+        paused = true;
+        stop();
+      }
+
+      function resume() {
+        paused = false;
+        start();
+      }
+
+      // Hover hanya untuk mouse; sentuhan ditangani touchstart/touchend.
+      track.addEventListener('pointerenter', function (event) {
+        if (event.pointerType === 'mouse') pause();
+      });
+      track.addEventListener('pointerleave', function (event) {
+        if (event.pointerType === 'mouse') resume();
+      });
+      track.addEventListener('touchstart', pause, { passive: true });
+      track.addEventListener('touchend', function () {
+        setTimeout(resume, interval);
+      });
+      track.addEventListener('focusin', pause);
+      track.addEventListener('focusout', resume);
+
+      new IntersectionObserver(function (entries) {
+        visible = entries[0].isIntersecting;
+        visible ? start() : stop();
+      }, { threshold: 0.4 }).observe(track);
+    });
+  })();
+</script>

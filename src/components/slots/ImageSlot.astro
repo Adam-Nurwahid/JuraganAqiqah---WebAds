@@ -1,0 +1,93 @@
+---
+import { siteData, waLink } from '../../data/site.js';
+import { slotSizes } from '../../data/imageSlots.js';
+import SlotPlaceholder from './SlotPlaceholder.astro';
+
+// Satu slot gambar: gambar asli (utuh, tidak dipotong) atau placeholder.
+// Bisa diklik ke WhatsApp (`link`) atau diperbesar (`zoom`).
+interface Props {
+  slot: {
+    id: string;
+    label: string;
+    src: string;
+    alt: string;
+    aspectRatio?: string;
+    width?: number;
+    height?: number;
+    link?: string;
+    waMessage?: string;
+    zoom?: boolean;
+    priority?: boolean;
+  };
+  compact?: boolean;
+}
+
+const { slot, compact = false } = Astro.props;
+const ratio = slot.aspectRatio ?? '4:5';
+const size = slotSizes[ratio] ?? slotSizes['4:5'];
+const width = slot.width ?? size.width;
+const height = slot.height ?? size.height;
+
+const isWhatsApp = slot.link === 'whatsapp';
+const waMessage = slot.waMessage ?? siteData.waMessages.default;
+const href = isWhatsApp ? waLink(waMessage) : slot.link;
+const canZoom = Boolean(slot.zoom && slot.src && !slot.link);
+---
+
+{
+  href ? (
+    <a
+      href={href}
+      class="block"
+      aria-label={slot.alt}
+      {...(isWhatsApp ? { 'data-wa-link': '', 'data-wa-message': waMessage, 'data-wa-location': slot.id, target: '_blank', rel: 'noopener noreferrer' } : {})}
+    >
+      {slot.src ? (
+        <img
+          src={slot.src}
+          alt={slot.alt}
+          width={width}
+          height={height}
+          loading={slot.priority ? 'eager' : 'lazy'}
+          fetchpriority={slot.priority ? 'high' : 'auto'}
+          decoding="async"
+          class="h-auto w-full"
+        />
+      ) : (
+        <SlotPlaceholder label={slot.label} width={width} height={height} ratio={ratio} compact={compact} />
+      )}
+    </a>
+  ) : canZoom ? (
+    <button type="button" class="group relative block w-full cursor-zoom-in" data-zoom-src={slot.src} data-zoom-alt={slot.alt} aria-label={`Perbesar: ${slot.alt}`}>
+      <img
+        src={slot.src}
+        alt={slot.alt}
+        width={width}
+        height={height}
+        loading={slot.priority ? 'eager' : 'lazy'}
+        decoding="async"
+        class="h-auto w-full"
+      />
+      <!-- Penanda zoom di pojok kanan atas agar tidak menutupi teks banner (biasanya di bawah) -->
+      <span class="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-dark-brown/75 px-2.5 py-1 text-[11px] font-semibold text-cream">
+        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="6.5" /><path d="m20 20-4.2-4.2M11 8.5v5M8.5 11h5" />
+        </svg>
+        Perbesar
+      </span>
+    </button>
+  ) : slot.src ? (
+    <img
+      src={slot.src}
+      alt={slot.alt}
+      width={width}
+      height={height}
+      loading={slot.priority ? 'eager' : 'lazy'}
+      fetchpriority={slot.priority ? 'high' : 'auto'}
+      decoding="async"
+      class="h-auto w-full"
+    />
+  ) : (
+    <SlotPlaceholder label={slot.label} width={width} height={height} ratio={ratio} compact={compact} />
+  )
+}

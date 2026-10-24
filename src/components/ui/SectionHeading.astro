@@ -1,0 +1,32 @@
+---
+import Divider from './Divider.astro';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  description?: string;
+  /** "light" = latar cream, "dark" = latar maroon/cokelat tua */
+  tone?: 'light' | 'dark';
+  class?: string;
+}
+
+const { eyebrow, title, description, tone = 'light', class: className = '' } = Astro.props;
+const isDark = tone === 'dark';
+---
+
+<div class={`reveal text-center ${className}`}>
+  {
+    eyebrow && (
+      <p class={`text-sm font-semibold uppercase tracking-[0.18em] ${isDark ? 'text-gold' : 'text-brown'}`}>{eyebrow}</p>
+    )
+  }
+  <h2 class={`mt-2 font-serif text-[1.75rem] font-bold leading-tight sm:text-[2rem] ${isDark ? 'text-cream' : 'text-maroon'}`}>
+    {title}
+  </h2>
+  <Divider class="mt-4" />
+  {
+    description && (
+      <p class={`mt-4 text-base leading-relaxed ${isDark ? 'text-cream/85' : 'text-dark-brown/80'}`}>{description}</p>
+    )
+  }
+</div>

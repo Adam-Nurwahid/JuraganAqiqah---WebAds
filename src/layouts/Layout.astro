@@ -1,0 +1,320 @@
+---
+import { siteData } from '../data/site.js';
+import TrackingPixel from '../components/TrackingPixel.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = siteData.seo.title, description = siteData.seo.description } = Astro.props;
+
+// URL absolut (wajib untuk canonical & Open Graph)
+const canonicalURL = new URL(Astro.url.pathname, siteData.seo.canonicalUrl);
+const ogImageURL = new URL(siteData.images.ogImage, siteData.seo.canonicalUrl).href;
+
+// JSON-LD LocalBusiness — membantu Google memahami bisnis & area layanan.
+const schemaLocalBusiness = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': `${siteData.seo.canonicalUrl}#business`,
+  name: siteData.brandName,
+  slogan: siteData.tagline,
+  foundingDate: siteData.since,
+  description,
+  image: ogImageURL,
+  logo: new URL(siteData.images.logo, siteData.seo.canonicalUrl).href,
+  telephone: siteData.phoneDisplay,
+  email: siteData.email,
+  url: siteData.seo.canonicalUrl,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: siteData.address,
+    addressCountry: 'ID'
+  },
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      opens: '07:00',
+      closes: '21:00'
+    }
+  ],
+  areaServed: siteData.serviceAreas.map((area) => ({ '@type': 'City', name: area }))
+};
+---
+
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="theme-color" content={siteData.seo.themeColor} />
+    <meta name="format-detection" content="telephone=no" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- SEO dasar -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content={siteData.seo.keywords} />
+    <meta name="author" content={siteData.brandName} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteData.brandName} />
+    <meta property="og:locale" content="id_ID" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content={String(siteData.images.ogImageWidth)} />
+    <meta property="og:image:height" content={String(siteData.images.ogImageHeight)} />
+    <meta property="og:image:alt" content={siteData.seo.ogImageAlt} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
+    <meta name="twitter:image:alt" content={siteData.seo.ogImageAlt} />
+
+    <!-- Font: Playfair Display (judul) + Poppins (isi & tombol) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400;1,500&family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+
+    <!-- Tracking pixel (Meta Pixel / GA) — isi di src/components/TrackingPixel.astro -->
+    <TrackingPixel />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify(schemaLocalBusiness)} />
+
+    <!-- Animasi reveal hanya aktif jika JavaScript berjalan -->
+    <script is:inline>document.documentElement.classList.add('js');</script>
+
+    <style is:global>
+      /*
+       * PALET WARNA JURAGAN AQIQAH
+       * Ubah warna cukup di sini. Setiap warna punya versi HEX dan versi "R G B"
+       * (dipakai Tailwind untuk opasitas). Pastikan keduanya diubah bersamaan.
+       */
+      :root {
+        /* Warna utama */
+        --maroon: #5a2e1f;
+        --gold: #d4af37;
+        --cream: #f6efe3;
+        --dark-brown: #3b1f13;
+
+        /* Warna pendukung (ornamen, border, hover, divider) */
+        --brown: #7a4a2a;
+        --caramel: #b8844a;
+        --sand: #eadcc2;
+        --ivory: #fff7eb;
+        --tan: #ac8a56;
+
+        --maroon-rgb: 90 46 31;
+        --gold-rgb: 212 175 55;
+        --cream-rgb: 246 239 227;
+        --dark-brown-rgb: 59 31 19;
+        --brown-rgb: 122 74 42;
+        --caramel-rgb: 184 132 74;
+        --sand-rgb: 234 220 194;
+        --ivory-rgb: 255 247 235;
+        --tan-rgb: 172 138 86;
+      }
+
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        background-color: var(--cream);
+        color: var(--dark-brown);
+      }
+
+      img,
+      picture,
+      video {
+        display: block;
+        max-width: 100%;
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      summary:focus-visible {
+        outline: 3px solid var(--gold);
+        outline-offset: 3px;
+        border-radius: 8px;
+      }
+
+      p {
+        text-wrap: pretty;
+      }
+
+      h1,
+      h2,
+      h3 {
+        text-wrap: balance;
+      }
+
+      ::selection {
+        background: var(--gold);
+        color: var(--dark-brown);
+      }
+
+      /* Ornamen geometris islami: bintang 8 sudut tipis, warna mengikuti --pattern-color */
+      .pattern-islamic {
+        position: relative;
+        isolation: isolate;
+      }
+      .pattern-islamic::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background-color: var(--pattern-color, var(--gold));
+        opacity: var(--pattern-opacity, 0.08);
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23000' stroke-width='1'%3E%3Cpath d='M40 8l9.4 22.6L72 40l-22.6 9.4L40 72l-9.4-22.6L8 40l22.6-9.4z'/%3E%3Cpath d='M17.4 17.4h45.2v45.2H17.4z'/%3E%3Ccircle cx='40' cy='40' r='6'/%3E%3C/g%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23000' stroke-width='1'%3E%3Cpath d='M40 8l9.4 22.6L72 40l-22.6 9.4L40 72l-9.4-22.6L8 40l22.6-9.4z'/%3E%3Cpath d='M17.4 17.4h45.2v45.2H17.4z'/%3E%3Ccircle cx='40' cy='40' r='6'/%3E%3C/g%3E%3C/svg%3E");
+        -webkit-mask-size: 80px 80px;
+        mask-size: 80px 80px;
+      }
+
+      /* Animasi halus saat elemen masuk layar */
+      .js .reveal {
+        opacity: 0;
+        transform: translateY(18px);
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease;
+        transition-delay: var(--reveal-delay, 0ms);
+      }
+      .js .reveal.is-visible {
+        opacity: 1;
+        transform: none;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        .js .reveal {
+          opacity: 1;
+          transform: none;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="min-h-screen overflow-x-clip bg-dark-brown font-sans text-base leading-relaxed text-dark-brown antialiased">
+    <!-- Latar sisi kiri-kanan (desktop): cokelat tua + pola islami -->
+    <div class="fixed inset-0 -z-10" aria-hidden="true">
+      <div class="pattern-islamic h-full w-full [--pattern-opacity:0.06]"></div>
+    </div>
+
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-gold focus:px-4 focus:py-2 focus:font-semibold focus:text-dark-brown"
+    >
+      Langsung ke konten
+    </a>
+
+    <!-- Satu kolom terpusat seperti tampilan aplikasi mobile -->
+    <div class="relative mx-auto min-h-screen w-full max-w-[520px] bg-cream shadow-[0_0_60px_rgb(0_0_0/0.45)]">
+      <slot />
+    </div>
+
+    <!--
+      Script ringan (tanpa library):
+      1. Rotasi nomor CS WhatsApp (round-robin via localStorage).
+      2. Animasi reveal saat elemen masuk layar.
+    -->
+    <script
+      is:inline
+      define:vars={{ whatsappNumbers: siteData.whatsappNumbers, waMessage: siteData.waMessages.default }}
+    >
+      (function () {
+        var STORAGE_KEY = 'juragan_aqiqah_cs_index';
+        var links = document.querySelectorAll('[data-wa-link]');
+
+        function nextNumber() {
+          try {
+            var stored = parseInt(localStorage.getItem(STORAGE_KEY), 10);
+            var index = isNaN(stored)
+              ? Math.floor(Math.random() * whatsappNumbers.length)
+              : (stored + 1) % whatsappNumbers.length;
+            localStorage.setItem(STORAGE_KEY, String(index));
+            return whatsappNumbers[index];
+          } catch (error) {
+            return whatsappNumbers[Math.floor(Math.random() * whatsappNumbers.length)];
+          }
+        }
+
+        function buildUrl(number, message) {
+          return 'https://wa.me/' + number + '?text=' + encodeURIComponent(message || waMessage);
+        }
+
+        function applyNumber(number) {
+          for (var i = 0; i < links.length; i++) {
+            var link = links[i];
+            var message = link.getAttribute('data-wa-message') || waMessage;
+            link.setAttribute('href', buildUrl(number, message));
+            link.setAttribute('target', '_blank');
+            link.setAttribute('rel', 'noopener noreferrer');
+          }
+        }
+
+        // Nomor awal dipilih saat halaman dimuat.
+        applyNumber(nextNumber());
+
+        // Setiap klik memakai nomor berikutnya (round-robin), pesan tetap sesuai tombol.
+        for (var j = 0; j < links.length; j++) {
+          links[j].addEventListener('click', function () {
+            var message = this.getAttribute('data-wa-message') || waMessage;
+            this.setAttribute('href', buildUrl(nextNumber(), message));
+
+            // TRACKING: aktifkan setelah pixel dipasang di TrackingPixel.astro
+            // if (window.fbq) fbq('track', 'Contact');
+            // if (window.gtag) gtag('event', 'whatsapp_click', { location: this.getAttribute('data-wa-location') || '' });
+          });
+        }
+
+        // Reveal: tampilkan elemen .reveal saat masuk viewport.
+        var revealItems = document.querySelectorAll('.reveal');
+        if (!('IntersectionObserver' in window)) {
+          for (var k = 0; k < revealItems.length; k++) revealItems[k].classList.add('is-visible');
+        } else {
+          var observer = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+              });
+            },
+            { rootMargin: '0px 0px -8% 0px', threshold: 0.12 }
+          );
+          revealItems.forEach(function (item) {
+            observer.observe(item);
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

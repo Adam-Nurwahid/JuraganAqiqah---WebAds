@@ -1,0 +1,21 @@
+---
+import { siteData } from '../data/site.js';
+import Divider from './ui/Divider.astro';
+import Icon from './ui/Icon.astro';
+
+const closing = siteData.closing;
+---
+
+<section class="pattern-islamic mt-14 bg-maroon px-5 py-12 text-center">
+  <div class="reveal">
+    <p class="font-serif text-lg italic text-gold">“{siteData.tagline}”</p>
+    <Divider class="mt-4" />
+    <h2 class="mt-5 font-serif text-[1.9rem] font-bold leading-tight text-cream">{closing.title}</h2>
+    <p class="mt-4 text-base leading-relaxed text-cream/90">{closing.text}</p>
+
+    <p class="mt-5 flex items-start gap-2 rounded-xl border border-gold/40 bg-dark-brown/50 p-4 text-left text-[15px] leading-relaxed text-sand">
+      <Icon name="clock" class="mt-0.5 h-5 w-5 flex-none text-gold" />
+      {closing.urgency}
+    </p>
+  </div>
+</section>

@@ -1,0 +1,73 @@
+---
+import { siteData, waLink } from '../../data/site.js';
+import WhatsAppIcon from './WhatsAppIcon.astro';
+
+/**
+ * Tombol reusable.
+ * - primary : latar gold, teks cokelat tua, hover caramel (CTA utama)
+ * - maroon  : latar maroon solid, teks cream
+ * - outline : garis gold, teks gold (untuk latar gelap)
+ * Jika `whatsapp` diisi (true atau teks pesan), tombol menjadi link wa.me
+ * yang ikut rotasi nomor CS. Ikon WhatsApp tampil cream (tanpa hijau WhatsApp).
+ */
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'maroon' | 'outline';
+  size?: 'md' | 'lg';
+  whatsapp?: boolean | string;
+  /** Penanda posisi tombol untuk tracking (mis. "hero", "paket-abah") */
+  location?: string;
+  class?: string;
+  ariaLabel?: string;
+}
+
+const {
+  href = '#',
+  variant = 'primary',
+  size = 'md',
+  whatsapp,
+  location,
+  class: className = '',
+  ariaLabel
+} = Astro.props;
+
+const waMessage = typeof whatsapp === 'string' ? whatsapp : siteData.waMessages.default;
+const finalHref = whatsapp ? waLink(waMessage) : href;
+
+const variants = {
+  primary: 'bg-gold text-dark-brown shadow-gold hover:bg-caramel',
+  maroon: 'bg-maroon text-cream shadow-soft hover:bg-dark-brown',
+  outline: 'border-2 border-gold text-gold hover:bg-gold hover:text-dark-brown'
+};
+
+const iconWrap = {
+  primary: 'bg-maroon text-cream',
+  maroon: 'bg-cream/15 text-cream',
+  outline: 'bg-gold/15 text-cream'
+};
+
+const sizes = {
+  md: 'min-h-[52px] px-5 py-3 text-base',
+  lg: 'min-h-[60px] px-5 py-3.5 text-[17px]'
+};
+
+const waAttrs = whatsapp
+  ? { 'data-wa-link': '', 'data-wa-message': waMessage, 'data-wa-location': location, target: '_blank', rel: 'noopener noreferrer' }
+  : {};
+---
+
+<a
+  href={finalHref}
+  class={`inline-flex items-center justify-center gap-3 rounded-full text-center font-semibold leading-snug transition-colors duration-200 ${variants[variant]} ${sizes[size]} ${className}`}
+  aria-label={ariaLabel}
+  {...waAttrs}
+>
+  {
+    whatsapp && (
+      <span class={`grid h-9 w-9 flex-none place-items-center rounded-full ${iconWrap[variant]}`}>
+        <WhatsAppIcon class="h-5 w-5" />
+      </span>
+    )
+  }
+  <slot />
+</a>

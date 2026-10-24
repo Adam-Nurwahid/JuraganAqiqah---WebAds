@@ -1,0 +1,49 @@
+---
+import { siteData } from '../data/site.js';
+import Divider from './ui/Divider.astro';
+import Icon from './ui/Icon.astro';
+import ImageSlot from './slots/ImageSlot.astro';
+import { heroFoodSlot } from '../data/imageSlots.js';
+
+const hero = siteData.hero;
+---
+
+<header class="pattern-islamic relative overflow-hidden bg-maroon text-center">
+  <!-- Ornamen emas: lengkung & cahaya halus -->
+  <div class="pointer-events-none absolute -top-24 left-1/2 h-64 w-[130%] -translate-x-1/2 rounded-b-[50%] border-b border-gold/30" aria-hidden="true"></div>
+  <div class="pointer-events-none absolute -right-16 top-24 h-48 w-48 rounded-full bg-gold/10 blur-3xl" aria-hidden="true"></div>
+
+  <div class="relative px-5 pb-8 pt-5">
+    <!-- Logo -->
+    <img
+      src={siteData.images.logo}
+      alt={`Logo ${siteData.brandName}`}
+      width="56"
+      height="56"
+      class="mx-auto h-14 w-auto"
+    />
+
+    <!-- Lencana Sejak 1972 -->
+    <p class="mt-4 inline-flex items-center gap-2 rounded-full border border-gold/60 bg-dark-brown/50 px-4 py-1.5 text-sm font-semibold uppercase tracking-[0.18em] text-gold">
+      <Icon name="star" class="h-4 w-4" />
+      Sejak {siteData.since}
+      <Icon name="star" class="h-4 w-4" />
+    </p>
+
+    <!-- Foto makanan (atur di heroFoodSlot, src/data/imageSlots.js) -->
+    <div class="-mx-1 mt-5 overflow-hidden rounded-2xl border-2 border-gold/70 shadow-lift">
+      <ImageSlot slot={heroFoodSlot} />
+    </div>
+
+    <h1 class="mt-6 font-serif text-[2.35rem] font-bold leading-[1.12] text-cream sm:text-[2.6rem]">
+      {hero.headline.split(',')[0]},
+      <span class="block text-gold">{hero.headline.split(',').slice(1).join(',').trim()}</span>
+    </h1>
+
+    <p class="mt-4 font-serif text-xl italic text-sand">“{siteData.tagline}”</p>
+
+    <Divider class="mt-5" />
+
+    <p class="mt-5 text-base leading-relaxed text-cream/90">{hero.intro}</p>
+  </div>
+</header>

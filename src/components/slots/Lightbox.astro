@@ -1,0 +1,46 @@
+---
+// Lightbox ringan (dialog native) untuk slot dengan `zoom: true`.
+---
+
+<dialog
+  id="slot-lightbox"
+  class="m-auto max-h-[95vh] w-[min(95vw,720px)] overflow-visible bg-transparent p-0 backdrop:bg-dark-brown/90"
+  aria-label="Gambar diperbesar"
+>
+  <button
+    type="button"
+    data-lightbox-close
+    class="absolute -top-12 right-0 grid h-10 w-10 place-items-center rounded-full border border-gold/60 bg-maroon text-gold"
+    aria-label="Tutup"
+  >
+    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+      <path d="M6 6l12 12M18 6 6 18" />
+    </svg>
+  </button>
+  <img data-lightbox-img src="" alt="" class="max-h-[88vh] w-full rounded-lg object-contain" />
+</dialog>
+
+<script is:inline>
+  (function () {
+    var dialog = document.getElementById('slot-lightbox');
+    if (!dialog || typeof dialog.showModal !== 'function') return;
+    var img = dialog.querySelector('[data-lightbox-img]');
+
+    document.querySelectorAll('[data-zoom-src]').forEach(function (trigger) {
+      trigger.addEventListener('click', function () {
+        img.src = trigger.getAttribute('data-zoom-src');
+        img.alt = trigger.getAttribute('data-zoom-alt') || '';
+        dialog.showModal();
+      });
+    });
+
+    dialog.querySelector('[data-lightbox-close]').addEventListener('click', function () {
+      dialog.close();
+    });
+
+    // Klik di luar gambar menutup lightbox.
+    dialog.addEventListener('click', function (event) {
+      if (event.target === dialog) dialog.close();
+    });
+  })();
+</script>

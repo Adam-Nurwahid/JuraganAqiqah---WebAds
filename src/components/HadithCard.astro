@@ -1,0 +1,37 @@
+---
+import { siteData } from '../data/site.js';
+import Icon from './ui/Icon.astro';
+---
+
+<section class="px-5 pt-10" aria-label="Hadits tentang aqiqah">
+  <figure class="reveal relative rounded-2xl border-2 border-gold/70 bg-ivory px-6 pb-6 pt-8 text-center shadow-soft">
+    <span class="absolute -top-5 left-1/2 grid h-10 w-10 -translate-x-1/2 place-items-center rounded-full border border-gold bg-maroon text-gold">
+      <Icon name="quote" class="h-5 w-5" strokeWidth={1.6} />
+    </span>
+    <blockquote class="font-serif text-xl italic leading-relaxed text-dark-brown">
+      “{siteData.hadith.text}”
+    </blockquote>
+    <figcaption class="mt-4 text-sm font-medium text-brown">{siteData.hadith.source}</figcaption>
+  </figure>
+
+  <!-- Pain points orang tua baru -->
+  <div class="reveal mt-8">
+    <p class="text-center font-serif text-xl font-bold text-maroon">Ayah & Bunda merasakan ini?</p>
+    <ul class="mt-4 space-y-3">
+      {
+        siteData.painPoints.map((item) => (
+          <li class="flex items-start gap-3 rounded-xl border border-tan/40 bg-ivory p-4 text-base text-dark-brown">
+            <span class="mt-0.5 grid h-6 w-6 flex-none place-items-center rounded-full bg-sand text-maroon">
+              <Icon name="close" class="h-3.5 w-3.5" strokeWidth={2.4} />
+            </span>
+            {item}
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-5 text-center text-base leading-relaxed text-dark-brown">
+      <strong class="font-semibold text-maroon">Tenang, kami siap membantu.</strong> Biar Juragan Aqiqah yang mengurus
+      semuanya, Ayah & Bunda tinggal terima beres.
+    </p>
+  </div>
+</section>

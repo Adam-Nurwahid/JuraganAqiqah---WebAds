@@ -1,0 +1,22 @@
+---
+import { siteData, waLink } from '../data/site.js';
+import WhatsAppIcon from './ui/WhatsAppIcon.astro';
+
+// Satu-satunya tombol WhatsApp: melayang di pojok kanan bawah.
+// Di desktop posisinya menempel ke tepi kanan kolom (lebar kolom 520px).
+const message = siteData.waMessages.default;
+---
+
+<a
+  href={waLink(message)}
+  data-wa-link
+  data-wa-message={message}
+  data-wa-location="floating"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Chat Juragan Aqiqah via WhatsApp"
+  class="fixed bottom-5 right-[max(1rem,calc((100vw-520px)/2+1rem))] z-50 grid h-16 w-16 place-items-center rounded-full border-2 border-gold bg-maroon text-cream shadow-lift transition-colors duration-200 hover:bg-dark-brown"
+>
+  <span class="absolute inset-0 animate-ping rounded-full border-2 border-gold/50 [animation-duration:2.4s]" aria-hidden="true"></span>
+  <WhatsAppIcon class="relative h-8 w-8" />
+</a>
