@@ -35,6 +35,8 @@
  *   id          : penanda unik (dipakai juga untuk tracking)
  *   label       : nama slot yang tampil di placeholder
  *   src         : path gambar; "" = tampilkan placeholder
+ *   youtube     : opsional. ID video YouTube vertikal (mis. "qZmNT9meMBU");
+ *                 jika diisi, slot tampil sebagai video 9:16 (src diabaikan)
  *   alt         : teks alternatif gambar
  *   aspectRatio : "4:5" | "1:1" | "16:9" | "auto"
  *   width/height: opsional, wajib untuk "auto" (ukuran asli file)
@@ -66,9 +68,11 @@ export const slotSizes = {
 export const heroFoodSlot = {
   id: 'slot-hero-food',
   label: 'SLOT HERO: Foto Makanan',
-  src: '',
-  alt: 'Hidangan aqiqah Juragan Aqiqah yang tersaji hangat dan menggugah selera',
-  aspectRatio: '1:1',
+  src: '/assets/images/foto-makanan.webp',
+  alt: 'Hidangan aqiqah Juragan Aqiqah: nasi kebuli, gulai, tongseng, sate, ayam panggang, telur balado, acar, dan kerupuk tersaji hangat di meja',
+  aspectRatio: 'auto',
+  width: 1080,
+  height: 589,
   priority: true
 };
 
@@ -168,9 +172,11 @@ export const imageSlots = [
   {
     id: 'slot-08',
     label: 'SLOT 08: Keunggulan Juragan Aqiqah (Sejak 1972)',
-    src: '',
-    alt: 'Keunggulan Juragan Aqiqah: amanah, kualitas, sesuai syariat, peduli, sejak 1972',
-    aspectRatio: '4:5',
+    src: '/assets/images/keunggulan.webp',
+    alt: 'Kenapa pilih Juragan Aqiqah: sesuai syariat dengan juru sembelih bersertifikat, makanan enak oleh chef profesional, kemasan food-grade, proses transparan, gratis ongkir DKI Jakarta sampai 20 km, dan dipercaya lebih dari 50.000 keluarga',
+    aspectRatio: 'auto',
+    width: 928,
+    height: 1152,
     intro: {
       eyebrow: 'Mengapa Juragan Aqiqah',
       title: 'Amanah Sejak 1972',
@@ -180,9 +186,11 @@ export const imageSlots = [
   {
     id: 'slot-09',
     label: 'SLOT 09: Proses Sesuai Syariat',
-    src: '',
-    alt: 'Proses pemilihan dan penyembelihan kambing aqiqah sesuai syariat',
-    aspectRatio: '4:5'
+    src: '/assets/images/sesuai-syariat.webp',
+    alt: 'Proses aqiqah sesuai syariat di Juragan Aqiqah: juru sembelih bersertifikat BNSP dan JULEHA, penyembelihan halal dan higienis, bisa disaksikan langsung, daging diproses terpisah per shohibul aqiqah, dimasak chef profesional dan dikemas food-grade',
+    aspectRatio: 'auto',
+    width: 928,
+    height: 1152
   },
   {
     id: 'slot-sertifikat',
@@ -202,16 +210,18 @@ export const imageSlots = [
   {
     id: 'slot-10',
     label: 'SLOT 10: Area Layanan / Peta',
-    src: '',
-    alt: 'Peta area layanan pengiriman Juragan Aqiqah',
-    aspectRatio: '4:5'
+    src: '/assets/images/area-layanan.webp',
+    alt: 'Peta area layanan Juragan Aqiqah di seluruh Jabodetabek: Jakarta, Tangerang, Bekasi, Depok, dan Bogor',
+    aspectRatio: '1:1'
   },
   {
     id: 'slot-11',
     label: 'SLOT 11: Cara Pesan',
-    src: '',
-    alt: 'Langkah-langkah cara memesan aqiqah di Juragan Aqiqah',
-    aspectRatio: '4:5'
+    src: '/assets/images/cara-pesan.webp',
+    alt: 'Cara pesan aqiqah di Juragan Aqiqah dalam 5 langkah: hubungi CS via WhatsApp, pilih paket dan domba, penyembelihan sesuai syariat, proses masak oleh katering profesional, dan pengiriman ke rumah',
+    aspectRatio: 'auto',
+    width: 928,
+    height: 1152
   },
 
   // Kolase foto pelanggan bersama sertifikat & merchandise Juragan Aqiqah
@@ -231,28 +241,18 @@ export const imageSlots = [
     }
   },
 
-  // Testimoni: tiga slot digabung menjadi carousel geser (ubah display ke "stack" untuk ditumpuk)
+  // Video YouTube vertikal (testimoni & paket): tiga slot digabung menjadi carousel geser.
+  // Ganti video: isi `youtube` dengan ID video (bagian setelah "v=" atau "/shorts/" di link YouTube).
   {
     id: 'slot-12',
-    label: 'SLOT 12: Testimoni 1',
-    src: '',
-    alt: 'Screenshot testimoni pelanggan Juragan Aqiqah',
-    aspectRatio: '4:5',
-    zoom: true,
+    label: 'SLOT 12: Video Testimoni 1',
+    youtube: 'qZmNT9meMBU',
+    alt: 'Testimoni Customer Juragan Aqiqah',
     group: 'testimoni',
-    display: 'carousel',
-    autoScroll: 3500 // geser otomatis tiap 3,5 detik (hapus baris ini untuk mematikan)
+    display: 'carousel'
   },
-  { id: 'slot-13', label: 'SLOT 13: Testimoni 2', src: '', alt: 'Screenshot testimoni pelanggan Juragan Aqiqah', aspectRatio: '4:5', zoom: true, group: 'testimoni' },
-  {
-    id: 'slot-14',
-    label: 'SLOT 14: Testimoni 3',
-    src: '',
-    alt: 'Screenshot testimoni pelanggan Juragan Aqiqah',
-    aspectRatio: '4:5',
-    zoom: true,
-    group: 'testimoni'
-  },
+  { id: 'slot-13', label: 'SLOT 13: Video Paket Baru', youtube: 'iwIxC11SZIc', alt: 'Paket Baru Juragan Aqiqah', group: 'testimoni' },
+  { id: 'slot-14', label: 'SLOT 14: Video Testimoni 2', youtube: 'P3tmjQEJz_0', alt: 'Testimoni Customer Juragan Aqiqah', group: 'testimoni' },
 
   // Galeri dokumentasi: grid 2 kolom, rasio 1:1
   {

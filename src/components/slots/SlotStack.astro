@@ -2,6 +2,7 @@
 import { siteData } from '../../data/site.js';
 import { imageSlots } from '../../data/imageSlots.js';
 import ImageSlot from './ImageSlot.astro';
+import YouTubeSlot from './YouTubeSlot.astro';
 import SectionHeading from '../ui/SectionHeading.astro';
 import CtaBlock from '../CtaBlock.astro';
 
@@ -59,8 +60,8 @@ const ctaFor = (slot) => {
                 data-autoscroll={block.autoScroll || undefined}
               >
                 {block.slots.map((slot) => (
-                  <div class="reveal w-[85%] flex-none snap-start overflow-hidden rounded-xl shadow-soft">
-                    <ImageSlot slot={slot} />
+                  <div class={`reveal flex-none snap-start overflow-hidden rounded-xl shadow-soft ${slot.youtube ? 'w-[62%]' : 'w-[85%]'}`}>
+                    {slot.youtube ? <YouTubeSlot slot={slot} /> : <ImageSlot slot={slot} />}
                   </div>
                 ))}
               </div>
@@ -78,7 +79,7 @@ const ctaFor = (slot) => {
             <div class="space-y-1">
               {block.slots.map((slot) => (
                 <div class="reveal">
-                  <ImageSlot slot={slot} />
+                  {slot.youtube ? <YouTubeSlot slot={slot} /> : <ImageSlot slot={slot} />}
                 </div>
               ))}
             </div>
@@ -105,6 +106,8 @@ const ctaFor = (slot) => {
       var visible = false;
 
       function next() {
+        // Jangan geser saat ada video YouTube yang sedang diputar di carousel ini.
+        if (track.querySelector('iframe')) return;
         var items = track.children;
         if (!items.length) return;
         var atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
@@ -157,4 +160,19 @@ const ctaFor = (slot) => {
       }, { threshold: 0.4 }).observe(track);
     });
   })();
+</script>
+
+<script is:inline>
+  // Facade YouTube: ganti thumbnail dengan iframe (autoplay) saat tombol play diketuk.
+  document.querySelectorAll('[data-youtube-id]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      var iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube-nocookie.com/embed/' + button.getAttribute('data-youtube-id') + '?autoplay=1&playsinline=1&rel=0';
+      iframe.title = button.getAttribute('data-youtube-title');
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.allowFullscreen = true;
+      iframe.className = 'absolute inset-0 h-full w-full';
+      button.replaceWith(iframe);
+    });
+  });
 </script>

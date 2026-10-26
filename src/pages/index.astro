@@ -1,7 +1,7 @@
 ---
 /**
  * SALES PAGE JURAGAN AQIQAH
- * Alur: Hero teks → hadits → tumpukan slot gambar → penutup → footer, plus 1 tombol WhatsApp melayang.
+ * Alur: Hero teks → logo legalitas → hadits → tumpukan slot gambar → penutup → footer, plus 1 tombol WhatsApp melayang.
  *
  * - Mengganti gambar / menambah / menghapus / mengurutkan slot: edit `src/data/imageSlots.js`
  *   (README lengkap ada di bagian atas file tersebut).
@@ -12,6 +12,7 @@
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
 import HadithCard from '../components/HadithCard.astro';
+import TrustBadges from '../components/TrustBadges.astro';
 import SlotStack from '../components/slots/SlotStack.astro';
 import Lightbox from '../components/slots/Lightbox.astro';
 import ClosingCta from '../components/ClosingCta.astro';
@@ -22,6 +23,7 @@ import FloatingWhatsApp from '../components/FloatingWhatsApp.astro';
 <Layout>
   <main id="main-content">
     <Hero />
+    <TrustBadges />
     <HadithCard />
     <SlotStack />
     <ClosingCta />
